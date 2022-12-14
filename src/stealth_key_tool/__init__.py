@@ -26,6 +26,8 @@ __all__ = ["PURPOSE",
            "get_child_key",
            "get_path",
            "get_wif",
+           "parse_coin_id",
            "parse_account_id",
            "parse_address_index",
-           "parse_path"]
+           "parse_path",
+           "parse_network_byte"]

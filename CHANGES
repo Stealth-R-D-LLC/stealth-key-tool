@@ -1,0 +1,15 @@
+============
+ Change Log
+============
+
+* 0.2.0 - Added `sc` command (set coin)
+        - Added `snb` command (set net byte)
+        - Changes to API to support coin type and net byte 
+        - Added semi-interactive (`-S`) mode
+        - Added version (`-v`) flag
+        - Improved readability of example script
+        - Added example script for semi-interactive mode
+        - Improvements to the README.md
+        - Added `parse_coin_id()` and `parse_network_byte()` to API
+* 0.1.1 - Restructured for hosting on PyPI
+* 0.1.0 - Initial version

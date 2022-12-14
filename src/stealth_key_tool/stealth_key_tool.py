@@ -42,6 +42,8 @@ WIF_COMPRESSED = bytes([0x01])  # 1 -> is compressed
 
 class KeyToolError(Exception):
   pass
+class CoinError(KeyToolError):
+  pass
 class AccountError(KeyToolError):
   pass
 class ChangeError(KeyToolError):
@@ -49,6 +51,8 @@ class ChangeError(KeyToolError):
 class AddressError(KeyToolError):
   pass
 class PathError(KeyToolError):
+  pass
+class NetworkError(KeyToolError):
   pass
 
 # included as a reference
@@ -89,23 +93,29 @@ def get_child_key(key, purpose=PURPOSE,
   child5 = child4.ChildKey(address_index)
   return child5
 
-def get_path(account, change, index):
-  params = (PURPOSE, COIN_XST, account, change, index)
+def get_path(purpose, coin, account, change, index):
+  params = (purpose, coin, account, change, index)
   return "m/%d'/%d'/%d'/%d/%d" % params
 
 def get_wif(key):
   raw = WIF_PREFIX_XST + key.k.to_string() + WIF_COMPRESSED
   return Base58.check_encode(raw)
 
-def parse_account_id(p):
+def parse_id(p, e):
   try:
     if p[-1] == "'":
       p = p[:-1]
-    acc = int(p)
-    assert (acc >= 0)
+    i = int(p)
+    assert (i >= 0)
   except:
-    raise AccountError("Account id \"%s\" not valid" % p)
-  return acc
+    raise e
+  return i
+
+def parse_coin_id(p):
+  return parse_id(p, CoinError("Coin id \"%s\" not valid" % p))
+
+def parse_account_id(p):
+  return parse_id(p, AccountError("Account id \"%s\" not valid" % p))
 
 def parse_address_index(p):
   try:
@@ -139,3 +149,10 @@ def parse_path(pth):
     raise AddressError("\"%s\" is not a valid address index" % p[2])
   return (acc, chg, idx)
 
+def parse_network_byte(p):
+  try:
+    nw = int(p)
+    assert (0 <= nw <= 255)
+  except:
+    raise NetworkError("Network byte \"%s\" not valid" % p)
+  return nw

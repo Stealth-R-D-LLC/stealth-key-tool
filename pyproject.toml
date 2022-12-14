@@ -2,6 +2,21 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "stealth_key_tool"
+version = "0.2.0"
+authors = [
+  { name="James Stroud", email="stealthsend@stealth-coin.com" },
+]
+description = "A simplified wrapper for working with HD wallets"
+readme = "README.md"
+requires-python = ">=3.4"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
