@@ -74,7 +74,7 @@ class DependencyError(KeyToolError):
 def keccak_256(message):
   k = keccak.new(digest_bits=256)
   k.update(message)
-  return k.digest()
+  return k
 
 # generalized for any network byte
 def get_p2pkh_address(key, netbyte):
@@ -83,8 +83,8 @@ def get_p2pkh_address(key, netbyte):
 
 # network byte is ignored
 def get_eth_address(key, netbyte=None):
-  x = keccak_256(key.PublicKey(compressed=False)).hex()[-40:]
-  h = keccak_256(x.encode('utf-8')).hex()
+  x = keccak_256(key.PublicKey(compressed=False)).hexdigest()[-40:]
+  h = keccak_256(x.encode('utf-8')).hexdigest()
   b = []
   for i, c in enumerate(x):
       if c in string.digits:
