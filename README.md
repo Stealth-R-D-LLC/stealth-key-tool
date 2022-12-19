@@ -283,7 +283,7 @@ the "examples" directory as "non-interactive.bash".
 The **stealth_key_tool** API exposes several high-level functions that
 simplify the most common tasks related to working with HD wallets.
 
-**keccak_256**(...)**
+**keccak_256(...)**
 
 ```
 keccak_256(message) -> Crypto.Hash.keccak.Keccak_Hash
