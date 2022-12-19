@@ -17,15 +17,9 @@ import string
 import getpass
 import argparse
 
-try:
-  import pkg_resources
-  HAVE_PKG_RESOURCES = True
-except:
-  HAVE_PKG_RESOURCES = False
-
 from . import *
+from . import __version__
 
-VERSION = "0.2.0"
 
 ABET = string.ascii_lowercase + string.whitespace
 
@@ -55,11 +49,21 @@ def get_input(prompt=None, interactive=True):
 
 def print_help():
   pstderr("---------------------------------------")
-  pstderr("                  HELP")
+  pstderr(" --              HELP               --")
   pstderr("---------------------------------------")
-  pstderr("     h  - help")
-  pstderr("  addr  - get address")
+  pstderr(" User requested output")
+  pstderr("---------------------------------------")
   pstderr("    gp  - get path")
+  pstderr("  addr  - get address")
+  pstderr("  xpub  - account extended public key")
+  pstderr("  xprv  - account extended private key")
+  pstderr("   pub  - hex compressed public key")
+  pstderr("   prv  - hex private key")
+  pstderr("  upub  - hex uncompressed public key")
+  pstderr("   wif  - wallet import format")
+  pstderr("---------------------------------------")
+  pstderr(" Path selection")
+  pstderr("---------------------------------------")
   pstderr("    sc  - set coin")
   pstderr("    sa  - set account")
   pstderr("   ++a  - increment account")
@@ -70,12 +74,20 @@ def print_help():
   pstderr("   ++i  - increment address index")
   pstderr("   --i  - increment address index")
   pstderr("    sp  - set path")
-  pstderr("   snb  - set network byte")
-  pstderr("  xpub  - account extended public key")
-  pstderr("  xprv  - account extended private key")
-  pstderr("   pub  - hex public key")
-  pstderr("   prv  - hex private key")
-  pstderr("   wif  - wallet import format")
+  pstderr("---------------------------------------")
+  pstderr(" Coin parameters")
+  pstderr("---------------------------------------")
+  pstderr("  sanb  - set address network byte")
+  pstderr("  swnb  - set wif network byte")
+  pstderr("   xst  - set XST defaults")
+  pstderr("   btc  - set BTC defaults")
+  pstderr("   eth  - set ETH defaults")
+  pstderr("   ltc  - set LTC defaults")
+  pstderr("  doge  - set DOGE defaults")
+  pstderr("---------------------------------------")
+  pstderr(" App control")
+  pstderr("---------------------------------------")
+  pstderr("     h  - help")
   pstderr("     q  - quit")
   pstderr("---------------------------------------")
 
@@ -102,14 +114,14 @@ def main_loop(args):
   mnemonic = get_mnemonic(interactive, args.semi)
   key = key_from_mnemonic(mnemonic)
 
+  currency = get_currency("XST")
+
   purpose = PURPOSE
-  coin = COIN_XST
   account = 0
   change = 0
   index = 0
-  network = NET_XST
 
-  print_path(purpose, coin, account, change, index, interactive)
+  print_path(purpose, currency.coin, account, change, index, interactive)
 
   while True:
     b = get_input("Command: ", interactive)
@@ -138,18 +150,8 @@ def main_loop(args):
       except Exception as e:
         pstderr(e)
         continue
-      coin = cn
-      print_path(purpose, coin, account, change, index, interactive)
-    ###  set network  ###
-    elif c == "snb":
-      if (p is None):
-        p = get_input("Enter network byte: ")
-      try:
-        nt = parse_network_byte(p)
-      except Exception as e:
-        pstderr(e)
-        continue
-      network = nt
+      currency.coin = cn
+      print_path(purpose, currency.coin, account, change, index, interactive)
     ###  set account  ###
     elif c == "sa":
       if (p is None):
@@ -160,26 +162,26 @@ def main_loop(args):
         pstderr(e)
         continue
       account = acc
-      print_path(purpose, coin, account, change, index, interactive)
+      print_path(purpose, currency.coin, account, change, index, interactive)
     ###  increment account  ###
     elif c == "++a":
       account += 1
-      print_path(purpose, coin, account, change, index, interactive)
+      print_path(purpose, currency.coin, account, change, index, interactive)
     ###  decrement account  ###
     elif c == "--a":
       if account < 1:
         pstderr("Account can't be decremented")
       else:
         account -= 1
-        print_path(purpose, coin, account, change, index, interactive)
+        print_path(purpose, currency.coin, account, change, index, interactive)
     ###  set external  ###
     elif c == "ext":
       change = 0
-      print_path(purpose, coin, account, change, index, interactive)
+      print_path(purpose, currency.coin, account, change, index, interactive)
     ###  set internal  ###
     elif c == "int":
       change = 1
-      print_path(purpose, coin, account, change, index, interactive)
+      print_path(purpose, currency.coin, account, change, index, interactive)
     ###  set address index  ###
     elif c == "si":
       if p is None:
@@ -190,30 +192,34 @@ def main_loop(args):
         pstderr(e)
         continue
       index = idx
-      print_path(purpose, coin, account, change, index, interactive)
+      print_path(purpose, currency.coin, account, change, index, interactive)
     ###  increment address index  ###
     elif c == "++i":
       index += 1
-      print_path(purpose, coin, account, change, index, interactive)
+      print_path(purpose, currency.coin, account, change, index, interactive)
     ###  decrement address index  ###
     elif c == "--i":
       if index < 1:
         pstderr("Address index can't be decremented")
       else:
         index -= 1
-        print_path(purpose, coin, account, change, index, interactive)
-    ###  get public key  ###
+        print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  get compressed public key  ###
     elif c == "pub":
-      child = get_child_key(key, PURPOSE, coin, account, change, index)
+      child = get_child_key(key, PURPOSE, currency.coin, account, change, index)
       print(child.PublicKey().hex())
     ###  get private key ###
     elif c == "prv":
-      child = get_child_key(key, PURPOSE, coin, account, change, index)
+      child = get_child_key(key, PURPOSE, currency.coin, account, change, index)
       print(child.PrivateKey().hex())
+    ###  get uncompressed public key  ###
+    elif c == "upub":
+      child = get_child_key(key, PURPOSE, currency.coin, account, change, index)
+      print(child.PublicKey(compressed=False).hex())
     ###  get wallet import format  ###
     elif c == "wif":
-      child = get_child_key(key, PURPOSE, coin, account, change, index)
-      print(get_wif(child))
+      child = get_child_key(key, PURPOSE, currency.coin, account, change, index)
+      print(get_wif(child, currency.wif_net_byte))
     ###  set path  ###
     elif c == "sp":
       if p is None:
@@ -223,22 +229,62 @@ def main_loop(args):
       except Exception as e:
         pstderr(e)
         continue
-      print_path(purpose, coin, account, change, index, interactive)
+      print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  set address network byte  ###
+    elif c == "sanb":
+      if (p is None):
+        p = get_input("Enter the address network byte: ")
+      try:
+        nt = parse_network_byte(p)
+      except Exception as e:
+        pstderr(e)
+        continue
+      currency.addr_net_byte = nt
+    ###  set address network byte ###
+    elif c == "swnb":
+      if p is None:
+        p = get_input("Enter the wif network byte: ")
+      try:
+        nt = parse_network_byte(p)
+      except Exception as e:
+        pstderr(e)
+        continue
+      currency.wif_net_byte = nt
+    ###  set coin defaults to XST  ###
+    elif c == "xst":
+      currency = get_currency("XST")
+      print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  set coin defaults to BTC  ###
+    elif c == "btc":
+      currency = get_currency("BTC")
+      print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  set coin defaults to ETH  ###
+    elif c == "eth":
+      currency = get_currency("ETH")
+      print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  set coin defaults to LTC  ###
+    elif c == "ltc":
+      currency = get_currency("LTC")
+      print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  set coin defaults to DOGE  ###
+    elif c == "doge":
+      currency = get_currency("DOGE")
+      print_path(purpose, currency.coin, account, change, index, interactive)
     ###  get path  ###
     elif c == "gp":
-      print(get_path(purpose, coin, account, change, index))
+      print(get_path(purpose, currency.coin, account, change, index))
     ###  get address  ###
     elif c == "addr":
-      child = get_child_key(key, PURPOSE, coin, account, change, index)
-      address = get_address(child, network)
+      child = get_child_key(key, PURPOSE, currency.coin, account, change, index)
+      address = currency.get_address(child)
       print(address)
     ###  get extended public key  ###
     elif c == "xpub":
-      child = get_child_key(key, PURPOSE, coin, account)
+      child = get_child_key(key, PURPOSE, currency.coin, account)
       print(child.ExtendedKey(private=False))
     ###  get extended private key  ###
     elif c == "xprv":
-      child = get_child_key(key, PURPOSE, coin, account)
+      child = get_child_key(key, PURPOSE, currency.coin, account)
       print(child.ExtendedKey(private=True))
     ###  command not recognized  ###
     elif c:
@@ -247,11 +293,7 @@ def main_loop(args):
 def main():
   args = setup_args()
   if args.version:
-    if HAVE_PKG_RESOURCES:
-      version = pkg_resources.require("stealth_key_tool")[0].version
-    else:
-      version = ">=%s" % VERSION
-    print(version)
+    print(__version__)
     raise SystemExit
   try:
     main_loop(args)

@@ -12,17 +12,20 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+from .version import VERSION as __version__
+
 from .stealth_key_tool import *
 from .pbkdf2 import *
 from .bip32utils import *
 
 
+
 __all__ = ["PURPOSE",
-           "COIN_XST",
-           "NET_XST",
+           "get_currency",
            "seed_from_mnemonic",
            "key_from_mnemonic",
-           "get_address",
+           "get_p2pkh_address",
+           "get_eth_address",
            "get_child_key",
            "get_path",
            "get_wif",

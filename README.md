@@ -2,15 +2,16 @@
 
 The **stealth-key-tool** package is a high level wrapper around some of
 the most critical functionality needed for heirarchical deterministic (HD)
-wallets.  The primary goal of this package is to provide a secure means to
+wallets.  The primary goal of this package is to provide a simple means to
 derive private keys, addresses, and other essential information from HD
 mnemonics (typically 12, 18, or 24 word secret phrases).
 
-Towards this goal of security, all dependencies for this package are either
-(1) part of the Python 3 standard distribution or (2) fully contained within
-the package itself, making this library easy to run on an air-gapped
-or otherwise isolated computer. This limitation of dependencies also helps
-the user audit the code.
+The **stealth-key-tool** relies on
+the [ecdsa](https://pypi.org/project/ecdsa/) package,
+the [pycryptodome](http://pycryptodome.readthedocs.io/) package,
+and is subject to security considerations therein. Please see especially the
+advice [here](https://pypi.org/project/ecdsa/#Security).
+
 
 This README is divided into three parts. The first part covers the basics of
 HD wallets necessary to use this package. The second part describes the use
@@ -45,7 +46,7 @@ In this path, the apostrophes (`'`) have meanings that are beyond the scope
 of this README. For our purposes, the user is advised to simply ignore
 them, although they will be included in this discussion to ensure technical
 precision. The leftmost `m` amounts to a visual cue that indicates the start
-of the path. The `44'` never changes. the `125'` indicates the coin is
+of the path. The `44'` never changes. The `125'` indicates the coin is
 XST (this is the **stealth-key-tool**, after all). Each coin will have
 a different number in this position. For example, instead of `125'`,
 BTC uses `0'` here.
@@ -132,11 +133,21 @@ which is just a basic user interface where the user types simple commands
 to alter the heirarchy (also called a "path", or "chain"),
 or to output desired information.
 
-The commands are:
+### Command Summaries
 
-* `h` : prints list of commands
-* `addr` : prints the address for the current HD path
+#### User Requested Output Commands
+
 * `gp` : prints the current HD path
+* `addr` : prints the address for the current HD path
+* `xpub` : prints the account's extended public key
+* `xprv` : prints the account's extended private key (**NEVER SHARE**)
+* `pub` : prints the address's compressed public key
+* `prv` : prints the address's private key (**NEVER SHARE**)
+* `upub` : prints the address's uncompressed public key
+* `wif` : prints the account's private key in WIF format (**NEVER SHARE**)
+
+#### Path Selection Commands
+
 * `sc` : sets the coin identifier
 * `sa` : sets the account identifier
 * `++a` : increments the account index by 1
@@ -147,25 +158,34 @@ The commands are:
 * `++i` : increments the address index
 * `--i` : decrements the address index
 * `sp` : sets the path using the last three elements (account/change/address)
-* `snb` : sets the network byte used to create addresses
-* `xpub` : prints the account's extended public key
-* `xprv` : prints the account's extended private key (**NEVER SHARE**)
-* `pub` : prints the address's public key
-* `prv` : prints the address's private key (**NEVER SHARE**)
-* `wif` : prints the account's private key in WIF format (**NEVER SHARE**)
+
+#### Coin Parameter Commands
+
+* `sanb` : sets the network byte used to create addresses
+* `swnb` : sets the network byte used to create wif strings
+* `xst`  : sets the coin parameters to those for XST
+* `btc`  : sets the coin parameters to those for BTC
+* `eth`  : sets the coin parameters to those for ETH
+* `ltc`  : sets the coin parameters to those for LTC
+* `doge`  : sets the coin parameters to those for DOGE
+
+#### App Control Commands
+
+* `h` : prints list of commands
 * `q` : quits the utility
+
 
 ### Arguments
 
-Several commands take arguments that may be entered on the same line as the command
-itself. These commands start with an "s": `sa`, `si`, and `sp`. The following
-input shows an example of how to set the path with `sp`:
+Several commands take arguments that may be entered on the same lineas the
+command itself. These commands start with an "s": `sa`, `si`, and `sp`.
+The following input shows an example of how to set the path with `sp`:
 
 ```
 sp 5'/1/4
 ```
 
-This command sets the path to:
+Given the default purpose, and XST as the currency, this command sets the path to:
 
 ```
 m/44'/125'/5'/1/4
@@ -260,8 +280,32 @@ the "examples" directory as "non-interactive.bash".
 
 # The API
 
-The stealth_key_tool API exposes several high-level functions that
+The **stealth_key_tool** API exposes several high-level functions that
 simplify the most common tasks related to working with HD wallets.
+
+
+**get_currency(...)**
+
+```
+get_currency(ticker) -> Currency
+```
+
+Takes a ticker as a `str` and returns a new instance of `Currency`
+with the following attributes:
+
+* *name* : `str` representing the currency name
+* *ticker* : `str` representing the currency ticker
+* *coin* : `int` representing the currency coin id
+* *addr_net_byte* : `int` representing the address network byte
+* *wif_net_byte* : `int` representing the wif network byte
+* *get_address* : `function` *(key) -> str*
+* *get_copy* : `function` *() -> Currency*
+
+Available currencies are "XST", "BTC", "ETH", "LTC", and "DOGE".
+
+The returned `Currency` object can be modified without influencing
+the default currencies obtained by this function.
+
 
 **seed_from_mnemonic(...)**
 
@@ -281,14 +325,25 @@ key_from_mnemonic(mnemonic, salt="") -> BIP32Key
 Takes the mnemonic phrase as a `str` and optional salt as a `str` and
 returns a private `BIP32Key` derived from the mnemonic.
 
-**get_address(...)**
+**get_p2pkh_address(...)**
 
 ```
-get__address(key, netbyte) -> str
+get_p2pkh_address(key, netbyte) -> str
 ```
 
 Takes a `BIP32Key` and the network byte (62 for XST) to create
-an address, returned as a `str`.
+a pay-to-public-key-hash (p2pkh) address, returned as a `str`.
+
+**get_eth_address(...)**
+
+```
+get_eth_address(key, netbyte=None) -> str
+```
+
+Takes a `BIP32Key` to create a checksummed ETH address as a `str`.
+The `netbyte` argument is ignored if given to allow interchanging
+of `get_*_address()` functions in a functional setting.
+
 
 **get_child_key(...)**
 

@@ -2,6 +2,17 @@
  Change Log
 ============
 
+* 0.3.0 - Functionality in stealth-key-tool.py to modify the
+          wif network byte for any currency (`swnb`)
+        - Added defaults in stealth-key-tool.py for BTC, ETH,
+          LTC, and DOGE (commands `xst`, `btc`, `eth`, `ltc`, `doge`)
+        - Currency type determines type of address in stealth-key-tool.py
+        - Added command in stealth-key-tool.py to get the
+          uncompressed public key (`upub`)
+        - Added `get_eth_address()` to the API and renamed `get_address`
+          to `get_p2pkh_address`
+        - Added `get_currency()` to the API
+        - Changes to README.md to reflect dependencies
 * 0.2.0 - Added `sc` command (set coin)
         - Added `snb` command (set net byte)
         - Changes to API to support coin type and net byte 

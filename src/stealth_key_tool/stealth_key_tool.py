@@ -12,14 +12,18 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+import string
 import base64
 import hashlib
+
+from Crypto.Hash import keccak
 
 from .pbkdf2 import pbkdf2
 
 from .bip32utils import BIP32Key, BIP32_HARDEN, Base58
 
 TEST = False
+
 
 # see https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 PURPOSE = 44
@@ -30,15 +34,25 @@ HPURPOSE = 0x8000002C
 COIN_XST = 125
 COIN_TEST = 1
 COIN_BTC = 0
+COIN_LTC = 2
+COIN_DOGE = 3
+COIN_ETH = 60
 
 # net byte values
-NET_XST = 62
-NET_BTC = 0
-NET_TEST = 111
+ADDR_NET_XST = 62
+ADDR_NET_BTC = 0
+ADDR_NET_LTC = 48
+ADDR_NET_DOGE = 30
+ADDR_NET_TEST = 111
 
 # wif encoding
-WIF_PREFIX_XST = bytes([0xbe])  # 190
+WIF_NET_XST = bytes([0xbe])   # 190
+WIF_NET_TEST = bytes([0xef])  # 239
+WIF_NET_BTC = bytes([0x80])   # 128
+WIF_NET_LTC = bytes([0xb0])   # 176
+WIF_NET_DOGE = bytes([0x9e])   # 158
 WIF_COMPRESSED = bytes([0x01])  # 1 -> is compressed
+
 
 class KeyToolError(Exception):
   pass
@@ -54,6 +68,78 @@ class PathError(KeyToolError):
   pass
 class NetworkError(KeyToolError):
   pass
+class DependencyError(KeyToolError):
+  pass
+
+def keccak_256(message):
+  k = keccak.new(digest_bits=256)
+  k.update(message)
+  return k.digest()
+
+# generalized for any network byte
+def get_p2pkh_address(key, netbyte):
+  vh160 = netbyte.to_bytes(1, "big") + key.Identifier()
+  return Base58.check_encode(vh160)
+
+# network byte is ignored
+def get_eth_address(key, netbyte=None):
+  x = keccak_256(key.PublicKey(compressed=False)).hex()[-40:]
+  h = keccak_256(x.encode('utf-8')).hex()
+  b = []
+  for i, c in enumerate(x):
+      if c in string.digits:
+          b.append(c)
+      elif c in "abcdef":
+          n = int(h[i], 16)
+          if n > 7:
+              b.append(c.upper())
+          else:
+              b.append(c)
+  return "0x" + "".join(b)
+
+def get_wif(key, net_byte):
+  raw = net_byte + key.k.to_string() + WIF_COMPRESSED
+  return Base58.check_encode(raw)
+
+class Currency:
+   def __init__(self, name, ticker,
+                      coin, addr_net_byte, wif_net_byte,
+                      get_addr):
+     self.name = name
+     self.ticker = ticker
+     self.coin = coin 
+     self.addr_net_byte = addr_net_byte
+     self.wif_net_byte = wif_net_byte
+     self._get_address_inner = get_addr
+   def get_copy(self):
+     return self.__class__(self.name, self.ticker,
+                           self.coin,
+                           self.addr_net_byte, self.wif_net_byte,
+                           self._get_address_inner)
+   def get_address(self, child):
+     return self._get_address_inner(child, self.addr_net_byte)
+
+XST = Currency("Stealth", "XST",
+               COIN_XST, ADDR_NET_XST, WIF_NET_XST,
+               get_p2pkh_address)
+BTC = Currency("Bitcoin", "BTC",
+               COIN_BTC, ADDR_NET_BTC, WIF_NET_BTC,
+               get_p2pkh_address)
+ETH = Currency("Ethereum", "ETH",
+               COIN_ETH, None, WIF_NET_BTC,
+               get_eth_address)
+LTC = Currency("Litecoin", "LTC",
+               COIN_LTC, ADDR_NET_LTC, WIF_NET_LTC,
+               get_p2pkh_address)
+DOGE = Currency("Dogecoin", "DOGE",
+                COIN_DOGE, ADDR_NET_DOGE, WIF_NET_DOGE,
+                get_p2pkh_address)
+
+
+CURRENCIES = { "XST":XST, "BTC":BTC, "ETH":ETH, "LTC":LTC, "DOGE":DOGE }
+
+def get_currency(ticker):
+  return CURRENCIES[ticker].get_copy()
 
 # included as a reference
 def seed_from_mnemonic(mnemonic, salt=""):
@@ -66,11 +152,6 @@ def seed_from_mnemonic(mnemonic, salt=""):
 def key_from_mnemonic(mnemonic, salt=""):
   seed = seed_from_mnemonic(mnemonic, salt)
   return BIP32Key.fromEntropy(seed)
-
-# generalized for any network byte
-def get_address(key, netbyte):
-  vh160 = netbyte.to_bytes(1, "big") + key.Identifier()
-  return Base58.check_encode(vh160)
 
 # all practical implementations harden the purpose, coin type, and account
 def get_child_key(key, purpose=PURPOSE,
@@ -96,10 +177,6 @@ def get_child_key(key, purpose=PURPOSE,
 def get_path(purpose, coin, account, change, index):
   params = (purpose, coin, account, change, index)
   return "m/%d'/%d'/%d'/%d/%d" % params
-
-def get_wif(key):
-  raw = WIF_PREFIX_XST + key.k.to_string() + WIF_COMPRESSED
-  return Base58.check_encode(raw)
 
 def parse_id(p, e):
   try:

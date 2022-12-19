@@ -1,27 +1,31 @@
 [build-system]
-requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+requires = ["setuptools >= 61.0", "ecdsa", "pycryptodome"]
 
 [project]
 name = "stealth_key_tool"
-version = "0.2.0"
 authors = [
   { name="James Stroud", email="stealthsend@stealth-coin.com" },
 ]
 description = "A simplified wrapper for working with HD wallets"
 readme = "README.md"
-requires-python = ">=3.4"
+# requires-python = ">=3.4"
+dependencies = ["ecdsa", "pycryptodome"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dynamic = ["version"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "stealth_key_tool.__version__"}
 
 [project.urls]
 "homepage" = "https://github.com/Stealth-R-D-LLC/stealth-key-tool"
