@@ -1,23 +1,9 @@
 # Introduction
 
-The **stealth-key-tool** package is a high level wrapper around some of
-the most critical functionality needed for heirarchical deterministic (HD)
-wallets.  The primary goal of this package is to provide a simple means to
-derive private keys, addresses, and other essential information from HD
-mnemonics (typically 12, 18, or 24 word secret phrases).
-
-The **stealth-key-tool** relies on
-the [ecdsa](https://pypi.org/project/ecdsa/) package,
-the [pycryptodome](http://pycryptodome.readthedocs.io/) package,
-and is subject to security considerations therein. Please see especially the
-advice [here](https://pypi.org/project/ecdsa/#Security).
+The stealth-key-tool package is an advanced, high-level wrapper that enables the derivation of essential information, such as private keys, addresses, and more, from HD mnemonics (commonly 12, 18, or 24-word secret phrases). Relying on the ecdsa and pycryptodome packages, and subject to the inherent security considerations, the stealth-key-tool provides a convenient, straightforward way to manage HD wallets.
 
 
-This README is divided into three parts. The first part covers the basics of
-HD wallets necessary to use this package. The second part describes the use
-of the **stealth-key-tool.py** utility. Finally, the third part explains
-the **stealth_key_tool** API (notice dashes versus underscores in the names
-of the utility and package).
+This README will provide a comprehensive guide to the package, divided into three parts. The first part provides an introduction to the basics of HD wallets needed to use the package. The second part explains the usage of the stealth-key-tool.py utility. Finally, the third part presents an overview of the stealthkeytool API (note the difference between the names of the utility and the package).
 
 
 # HD Wallet Basics
