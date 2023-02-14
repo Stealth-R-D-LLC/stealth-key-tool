@@ -22,9 +22,7 @@ of the utility and package).
 
 # HD Wallet Basics
 
-In general this README assumes that the reader is either
-(a) an expert in HD wallets, or (b) doesn't care how they work
-and is getting help from and expert. For the latter type of
+This README presumes that the reader either has a thorough understanding of HD wallets or is in the position of seeking expert advice to comprehend the mechanics of such wallets. For the latter type of
 user: please remember to **NEVER SHARE your mnemonic with anyone**.
 
 That said, any user of the **stealth-key-tool.py** utility must have a
