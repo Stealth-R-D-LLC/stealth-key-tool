@@ -19,11 +19,10 @@ import hashlib
 from Crypto.Hash import keccak
 
 from .pbkdf2 import pbkdf2
-
 from .bip32utils import BIP32Key, BIP32_HARDEN, Base58
 
-TEST = False
 
+TEST = False
 
 # see https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 PURPOSE = 44
@@ -37,12 +36,16 @@ COIN_BTC = 0
 COIN_LTC = 2
 COIN_DOGE = 3
 COIN_ETH = 60
+COIN_FTC = 8
+COIN_VTC = 28
 
 # net byte values
 ADDR_NET_XST = 62
 ADDR_NET_BTC = 0
 ADDR_NET_LTC = 48
 ADDR_NET_DOGE = 30
+ADDR_NET_FTC = 14
+ADDR_NET_VTC = 71
 ADDR_NET_TEST = 111
 
 # wif encoding
@@ -50,7 +53,9 @@ WIF_NET_XST = bytes([0xbe])   # 190
 WIF_NET_TEST = bytes([0xef])  # 239
 WIF_NET_BTC = bytes([0x80])   # 128
 WIF_NET_LTC = bytes([0xb0])   # 176
-WIF_NET_DOGE = bytes([0x9e])   # 158
+WIF_NET_DOGE = bytes([0x9e])  # 158
+WIF_NET_FTC = bytes([0x8e])   # 142
+WIF_NET_VTC = bytes([0x80])   # 128
 WIF_COMPRESSED = bytes([0x01])  # 1 -> is compressed
 
 
@@ -134,9 +139,16 @@ LTC = Currency("Litecoin", "LTC",
 DOGE = Currency("Dogecoin", "DOGE",
                 COIN_DOGE, ADDR_NET_DOGE, WIF_NET_DOGE,
                 get_p2pkh_address)
+FTC = Currency("Feathercoin", "FTC",
+                COIN_FTC, ADDR_NET_FTC, WIF_NET_FTC,
+                get_p2pkh_address)
+VTC = Currency("Vertcoin", "VTC",
+                COIN_VTC, ADDR_NET_VTC, WIF_NET_VTC,
+                get_p2pkh_address)
 
 
-CURRENCIES = { "XST":XST, "BTC":BTC, "ETH":ETH, "LTC":LTC, "DOGE":DOGE }
+CURRENCIES = { "XST":XST, "BTC":BTC, "ETH":ETH, "LTC":LTC,
+               "DOGE":DOGE, "FTC":FTC, "VTC":VTC }
 
 def get_currency(ticker):
   return CURRENCIES[ticker].get_copy()

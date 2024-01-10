@@ -14,11 +14,15 @@
 
 import sys
 import string
+import json
 import getpass
 import argparse
 
+from .bip39 import ENGLISH, make_phrase_words, check_phrase
+
 from . import *
 from . import __version__
+
 
 
 ABET = string.ascii_lowercase + string.whitespace
@@ -84,6 +88,13 @@ def print_help():
   pstderr("   eth  - set ETH defaults")
   pstderr("   ltc  - set LTC defaults")
   pstderr("  doge  - set DOGE defaults")
+  pstderr("   ftc  - set FTC defaults")
+  pstderr("   vtc  - set VTC defaults")
+  pstderr("---------------------------------------")
+  pstderr(" BIP39")
+  pstderr("---------------------------------------")
+  pstderr("   mwp  - make word phrase")
+  pstderr("   vwp  - validate word phrase")
   pstderr("---------------------------------------")
   pstderr(" App control")
   pstderr("---------------------------------------")
@@ -270,6 +281,34 @@ def main_loop(args):
     elif c == "doge":
       currency = get_currency("DOGE")
       print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  set coin defaults to FTC  ###
+    elif c == "ftc":
+      currency = get_currency("FTC")
+      print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  set coin defaults to VTC  ###
+    elif c == "vtc":
+      currency = get_currency("VTC")
+      print_path(purpose, currency.coin, account, change, index, interactive)
+    ###  new word phrase ###
+    elif c == "mwp":
+      if p is None:
+        p = get_input("Enter number of words: ")
+      try:
+        words = make_phrase_words(int(p), ENGLISH)
+      except Exception as e:
+        pstderr("\"%s\" is not a valid phrase length" % p)
+        continue
+      print(" ".join(words))
+    ###  check word phrase ###
+    elif c == "vwp":
+      if p is None:
+        p = get_input("Enter phrase: ")
+      try:
+        result = check_phrase(p)
+      except Exception as e:
+        pstderr("\"%s\" is not a valid phrase" % p)
+        continue
+      print(json.dumps(result, indent=2))
     ###  get path  ###
     elif c == "gp":
       print(get_path(purpose, currency.coin, account, change, index))

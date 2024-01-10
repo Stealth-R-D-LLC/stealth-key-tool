@@ -6,12 +6,31 @@ wallets.  The primary goal of this package is to provide a simple means to
 derive private keys, addresses, and other essential information from HD
 mnemonics (typically 12, 18, or 24 word secret phrases).
 
+## Key Functionalities
+
+* Address derivation from any secret phrase for any coin according to BIP44.
+* Public and private key derivation, suitable for import (e.g. WIF).
+* **New**: Secret phrase generation and validation according to BIP39.
+* Minimal dependencies and open source for better security.
+
+## Example Use Case
+
+You had your favorite coin on a hardware wallet, but it
+stopped being supported, you need the private key to import into a mobile
+wallet without compromising the rest of your coins on your hardware wallet.
+
+Solution: just use **stealth-key-tool** on a secure, air-gapped machine and
+exctract your key.
+
+## Dependencies
+
 The **stealth-key-tool** relies on
 the [ecdsa](https://pypi.org/project/ecdsa/) package,
 the [pycryptodome](http://pycryptodome.readthedocs.io/) package,
 and is subject to security considerations therein. Please see especially the
 advice [here](https://pypi.org/project/ecdsa/#Security).
 
+## README Overview
 
 This README is divided into three parts. The first part covers the basics of
 HD wallets necessary to use this package. The second part describes the use
@@ -168,6 +187,13 @@ or to output desired information.
 * `eth`  : sets the coin parameters to those for ETH
 * `ltc`  : sets the coin parameters to those for LTC
 * `doge`  : sets the coin parameters to those for DOGE
+* `ftc`  : sets the coin parameters to those for FTC
+* `vtc`  : sets the coin parameters to those for VTC
+
+#### BIP39 Commands
+
+* `mwp` : makes a new word phrase compliant with BIP39 (English only)
+* `vwp` : validates a BIP39 compliant word phrase (English only)
 
 #### App Control Commands
 
@@ -177,7 +203,7 @@ or to output desired information.
 
 ### Arguments
 
-Several commands take arguments that may be entered on the same lineas the
+Several commands take arguments that may be entered on the same line as the
 command itself. These commands start with an "s": `sa`, `si`, and `sp`.
 The following input shows an example of how to set the path with `sp`:
 
@@ -191,6 +217,19 @@ Given the default purpose, and XST as the currency, this command sets the path t
 m/44'/125'/5'/1/4
 ```
 
+The two BIP39 commands (`mwp` and `vwp`) also take arguments. The following
+shows how to make a 24 word phrase:
+
+```
+mwp 24
+```
+
+The following shows validation of a 12 word phrase:
+
+```
+vwp mansion breeze nerve urban rare pluck apart earth truth truly wood high
+```
+
 ### User requested output
 
 Several commands will produce user requested output. In these cases,
@@ -202,7 +241,7 @@ commands in this category are: `xprv`, `prv` and `wif`.
 **Please be careful with these commands.**
 
 Other commands that produce user requested output are
-`addr`, `gp`, `xpub`, and `pub`.
+`addr`, `gp`, `xpub`, `pub`, `mwp`, and `vwp`.
 
 For further discussion of the importance of user requested output,
 please see the section titled "Scripting".
@@ -312,7 +351,7 @@ with the following attributes:
 * *get_address* : `function` *(key) -> str*
 * *get_copy* : `function` *() -> Currency*
 
-Available currencies are "XST", "BTC", "ETH", "LTC", and "DOGE".
+Available currencies are "XST", "BTC", "ETH", "LTC", "DOGE", "FTC", and "VTC".
 
 The returned `Currency` object can be modified without influencing
 the default currencies obtained by this function.
@@ -452,10 +491,30 @@ Throws a `NetworkError` upon failure to interpret the input.
 The returned value is an `int`.
 
 
+**make_phrase_words(...)**
+
+```
+make_phrase_words(words, lang) -> list
+```
+
+Takes the number of words (12, 15, 18, 21, or 24) and the language,
+(only `english` is supported currently) and returns a new,
+random ordered set of words (`str`s) for use as a secret phrase mnemonic.
+
+**check_phrase(...)**
+
+```
+check_phrase(phrase, lang) -> dict
+
+Takes the phrase as a `str` (single space separated BIP39 words) and the
+languange (only `english` is supported currently) and returns a
+`dict` that reports the entropy, checksum, and validity.
+
+
 # Copyright Notice
 
 ```
-Copyright (c) 2022, James Stroud
+Copyright (c) 2022 2024, James Stroud
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

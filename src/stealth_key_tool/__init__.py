@@ -17,6 +17,7 @@ from .version import VERSION as __version__
 from .stealth_key_tool import *
 from .pbkdf2 import *
 from .bip32utils import *
+from .bip39 import *
 
 
 
@@ -33,4 +34,6 @@ __all__ = ["PURPOSE",
            "parse_account_id",
            "parse_address_index",
            "parse_path",
-           "parse_network_byte"]
+           "parse_network_byte",
+           "make_phrase_words",
+           "check_phrase"]

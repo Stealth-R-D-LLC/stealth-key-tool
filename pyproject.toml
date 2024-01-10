@@ -16,7 +16,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dynamic = ["version"]
+license = {file = "LICENSE"}
+
+dynamic = ["version", "keywords", "scripts"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
