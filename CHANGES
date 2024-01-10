@@ -2,9 +2,8 @@
  Change Log
 ============
 
-* 0.4.2 - Fixed README.md
-* 0.4.1 - Some source corrections
-* 0.4.0 - Added VTC, support for BIP39
+* 0.4.3 - Added support for BIP39
+        - Added VTC
 * 0.3.3 - Added FTC
 * 0.3.1 - Stabilized and documented keccak_256()
 * 0.3.0 - Functionality in stealth-key-tool.py to modify the
