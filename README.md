@@ -509,6 +509,7 @@ check_phrase(phrase, lang) -> dict
 Takes the phrase as a `str` (single space separated BIP39 words) and the
 languange (only `english` is supported currently) and returns a
 `dict` that reports the entropy, checksum, and validity.
+```
 
 
 # Copyright Notice
