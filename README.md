@@ -1,7 +1,7 @@
 # Introduction
 
 The **stealth-key-tool** package is a high level wrapper around some of
-the most critical functionality needed for heirarchical deterministic (HD)
+the most critical functionality needed for hierarchical deterministic (HD)
 wallets.  The primary goal of this package is to provide a simple means to
 derive private keys, addresses, and other essential information from HD
 mnemonics (typically 12, 18, or 24 word secret phrases).
@@ -35,15 +35,15 @@ advice [here](https://pypi.org/project/ecdsa/#Security).
 This README is divided into three parts. The first part covers the basics of
 HD wallets necessary to use this package. The second part describes the use
 of the **stealth-key-tool.py** utility. Finally, the third part explains
-the **stealth_key_tool** API (notice dashes versus underscores in the names
-of the utility and package).
+the **stealth_key_tool** API (notice the differences in dashes and underscores
+in the names of the utility and package).
 
 
 # HD Wallet Basics
 
 In general this README assumes that the reader is either
 (a) an expert in HD wallets, or (b) doesn't care how they work
-and is getting help from and expert. For the latter type of
+and is getting help from an expert. For the latter type of
 user: please remember to **NEVER SHARE your mnemonic with anyone**.
 
 That said, any user of the **stealth-key-tool.py** utility must have a
@@ -53,7 +53,7 @@ to derive practically unlimited addresses, each of which belongs an
 account, and can either be a change address or a public address,
 which is known in HD wallet parlance as an "external address".
 
-Any address in the heirarchy of an HD wallet is expressed as a so-called
+Any address in the hierarchy of an HD wallet is expressed as a so-called
 "path" or "chain". The conceptually "first" address of an HD wallet has
 the following path:
 
@@ -88,7 +88,7 @@ The rightmost `0` is the address identifier, typically called the
 
 Any change to the path gives a new and completely unpredictable address.
 
-Although crude, the following ASCII-art hopes to illustrate the heirarchical
+Although crude, the following ASCII-art hopes to illustrate the hierarchical
 nature of HD wallets by showing the relationship of several paths, each
 represented only by its last three identifiers (account/change/address).
 
@@ -102,9 +102,9 @@ represented only by its last three identifiers (account/change/address).
      -> 1'/1/0 -> 1'/1/1 -> 1'/1/2
 ```
 
-It is important to highlight that each path in this heirarchy corresponds to a
+It is important to highlight that each path in this hierarchy corresponds to a
 unique address, completely unpredictable given knowledge of the other
-addresses in the heirarchy.
+addresses in the hierarchy.
 
 For further understanding of HD wallets, a good place to start is with
 Ledger's excellent
@@ -149,7 +149,7 @@ Please note that he mnemonic is not verified in any way.
 
 After the user enters the mnemonic, the utility goes into the "command loop",
 which is just a basic user interface where the user types simple commands
-to alter the heirarchy (also called a "path", or "chain"),
+to alter the hierarchy (also called a "path", or "chain"),
 or to output desired information.
 
 ### Command Summaries
@@ -408,7 +408,7 @@ of `get_*_address()` functions in a functional setting.
 Takes a `BIP32Key` and optional `int` arguments for the purpose,
 coin type, account, change, and address index, to produce a new
 child key returned as a `BIP32Key`. This function simplifies calculating
-keys in the heirarchy by inferring from the argument list the heirarchical
+keys in the hierarchy by inferring from the argument list the hierarchical
 level of the child key. *IMPORTANT*: the resulting child key will always
 be hardened for purpose, coin type, and account.
 
