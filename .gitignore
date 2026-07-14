@@ -6,3 +6,4 @@ stealth_key_tool.egg-info
 __pycache__
 /build
 _notes_
+.DS_Store

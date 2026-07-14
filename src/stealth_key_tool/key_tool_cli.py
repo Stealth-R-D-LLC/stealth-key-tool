@@ -251,7 +251,7 @@ def main_loop(args):
         pstderr(e)
         continue
       currency.addr_net_byte = nt
-    ###  set address network byte ###
+    ###  set wif network byte ###
     elif c == "swnb":
       if p is None:
         p = get_input("Enter the wif network byte: ")
@@ -260,7 +260,7 @@ def main_loop(args):
       except Exception as e:
         pstderr(e)
         continue
-      currency.wif_net_byte = nt
+      currency.wif_net_byte = bytes([nt])
     ###  set coin defaults to XST  ###
     elif c == "xst":
       currency = get_currency("XST")

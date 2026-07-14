@@ -92,17 +92,19 @@ def get_eth_address(key, netbyte=None):
   h = keccak_256(x.encode('utf-8')).hexdigest()
   b = []
   for i, c in enumerate(x):
-      if c in string.digits:
-          b.append(c)
-      elif c in "abcdef":
-          n = int(h[i], 16)
-          if n > 7:
-              b.append(c.upper())
-          else:
-              b.append(c)
+    if c in string.digits:
+      b.append(c)
+    elif c in "abcdef":
+      n = int(h[i], 16)
+      if n > 7:
+        b.append(c.upper())
+      else:
+        b.append(c)
   return "0x" + "".join(b)
 
 def get_wif(key, net_byte):
+  if isinstance(net_byte, int):
+    net_byte = net_byte.to_bytes(1, "big")
   raw = net_byte + key.k.to_string() + WIF_COMPRESSED
   return Base58.check_encode(raw)
 

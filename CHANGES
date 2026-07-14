@@ -2,6 +2,7 @@
  Change Log
 ============
 
+* 0.4.4 - Fixed bug when manually setting the WIF network byte
 * 0.4.3 - Added support for BIP39
         - Added VTC
 * 0.3.3 - Added FTC
