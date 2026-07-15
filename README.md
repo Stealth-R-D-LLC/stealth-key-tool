@@ -143,7 +143,8 @@ To see what you type when you enter the mnemonic, hit enter before typing
 the mnemonic, and you will be prompted again, this time with the ability
 to see the text.
 
-Please note that he mnemonic is not verified in any way. 
+Please note that mnemonic is not verified in any way. For that use the
+`vwp` command described below.
 
 ## Command Input
 
